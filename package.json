@@ -1,0 +1,11 @@
+{
+  "name": "schoolflow",
+  "version": "0.2.0",
+  "description": "Multi-tenant school management platform (Ghana-first)",
+  "private": true,
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test server/test/*.test.js"
+  }
+}

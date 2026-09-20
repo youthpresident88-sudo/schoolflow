@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Apply for admission</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="app.css"></head>
+<body>
+  <div class="public-wrap">
+    <div class="public-head"><div class="brand-mark" id="mark">SF</div><h1 id="schoolName">Admissions</h1><p id="motto">Online application</p></div>
+    <div class="public-card" id="card"><div class="empty">Loading…</div></div>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+  (async () => {
+    const { api, qs } = SF; const { html, mount } = SF.ui;
+    const slug = new URLSearchParams(location.search).get('school');
+    const card = document.getElementById('card');
+    let s;
+    try { s = await api('GET', '/api/public/school' + qs({ school: slug })); }
+    catch { mount(card, html`<div class="empty">We could not find this school. Please check the link you were given.</div>`); return; }
+    document.title = `Apply — ${s.name}`;
+    document.getElementById('schoolName').textContent = s.name;
+    document.getElementById('motto').textContent = s.motto || 'Online admission application';
+    document.documentElement.style.setProperty('--primary', s.primary_color);
+    const mark = document.getElementById('mark');
+    if (s.logo) { mark.textContent = ''; mark.style.backgroundImage = `url("${s.logo}")`; mark.style.backgroundColor = '#fff'; } else mark.textContent = SF.ui.initials(s.name, 'SF');
+    if (!s.admissions_open) { mount(card, html`<div class="empty">${s.name} is not accepting online applications right now. Please contact the school${s.phone ? html` on <a href="tel:${s.phone}">${s.phone}</a>` : ''}.</div>`); return; }
+    mount(card, html`<form id="f"><div class="fgrid">
+      <h4>About the child</h4>
+      <label>First name *<input name="first_name" required maxlength="60"></label><label>Last name *<input name="last_name" required maxlength="60"></label>
+      <label>Gender<select name="gender"><option value="">—</option><option value="male">Male</option><option value="female">Female</option></select></label>
+      <label>Date of birth<input type="date" name="dob" max="${SF.ui.todayStr()}"></label>
+      <label class="full">Class applying for<select name="class_id"><option value="">Not sure yet</option>${s.classes.map((c) => html`<option value="${c.id}">${c.name}</option>`)}</select></label>
+      <label class="full">Previous school (if any)<input name="previous_school" maxlength="120"></label>
+      <label class="full">Home address<input name="address" maxlength="200"></label>
+      <h4>Parent / guardian</h4>
+      <label>Full name *<input name="guardian_name" required maxlength="100"></label><label>Relationship<input name="guardian_relationship" placeholder="Mother, Father…" maxlength="40"></label>
+      <label>Phone<input type="tel" name="guardian_phone" placeholder="024 000 0000"></label><label>Email<input type="email" name="guardian_email"></label>
+      <label style="position:absolute;left:-9999px" aria-hidden="true">Leave empty<input name="website" tabindex="-1" autocomplete="off"></label>
+    </div><div class="form-error" role="alert"></div><div class="form-actions"><button class="btn btn-primary btn-lg" type="submit">Submit application</button></div></form>`);
+    const f = document.getElementById('f');
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = f.querySelector('.form-error'); const btn = f.querySelector('button'); err.textContent = ''; btn.disabled = true;
+      const d = Object.fromEntries(new FormData(f)); d.school = s.slug;
+      try {
+        const r = await api('POST', '/api/public/apply', d);
+        mount(card, html`<div class="empty" style="padding:40px 10px"><div class="success" style="margin:0 auto 14px">✓</div><h2>Application received</h2><p>Your reference number is <b>${r.application_no}</b>.<br>The school will contact you using the details you gave.</p></div>`);
+      } catch (ex) { err.textContent = ex.message; btn.disabled = false; }
+    });
+  })();
+  </script>
+</body></html>

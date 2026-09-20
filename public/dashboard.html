@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f766e"><title>Dashboard — SchoolFlow</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="app.css"></head>
+<body class="app-page">
+  <aside class="sidebar">
+    <div class="side-brand"><span class="brand-mark">SF</span><strong id="sideSchool">SchoolFlow</strong></div>
+    <nav id="nav" aria-label="Main"></nav>
+    <button class="logout" id="logout" title="Log out"><span class="ico" aria-hidden="true">🚪</span><span class="lbl">Log out</span></button>
+  </aside>
+  <main class="app-main">
+    <header class="app-header">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <div class="titles"><small id="pageSub"></small><h1 id="pageTitle"></h1></div>
+      <button class="user-pill" id="userPill" aria-label="Your account"></button>
+    </header>
+    <div id="view" aria-live="polite"><div class="skel-wrap" aria-hidden="true"><div class="skel-row"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div><div class="skel skel-lg"></div></div></div>
+  </main>
+  <div class="scrim" id="scrim"></div>
+  <nav class="tabbar" id="tabbar" aria-label="Quick navigation"></nav>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/v-dashboard.js"></script>
+  <script src="js/v-students.js"></script>
+  <script src="js/v-academics.js"></script>
+  <script src="js/v-attendance.js"></script>
+  <script src="js/v-results.js"></script>
+  <script src="js/v-fees.js"></script>
+  <script src="js/v-timetable.js"></script>
+  <script src="js/v-comms.js"></script>
+  <script src="js/v-messages.js"></script>
+  <script src="js/v-staff.js"></script>
+  <script src="js/v-reports.js"></script>
+  <script src="js/v-settings.js"></script>
+  <script src="js/v-portal.js"></script>
+  <script src="js/core.js"></script>
+</body></html>

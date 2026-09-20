@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verify a report card — SchoolFlow</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="app.css"></head>
+<body>
+  <div class="public-wrap">
+    <div class="public-head"><div class="brand-mark">SF</div><h1>Verify a report card</h1><p>Enter the code printed at the bottom of the report card.</p></div>
+    <div class="public-card">
+      <form id="f" style="display:flex;gap:10px"><input id="code" placeholder="SF-XXXX-XXXX" maxlength="12" autocomplete="off" style="margin:0;text-transform:uppercase" aria-label="Verification code"><button class="btn btn-primary" type="submit">Verify</button></form>
+      <div id="result" style="margin-top:18px" aria-live="polite"></div>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+  (() => {
+    const { html, mount, ordinal } = SF.ui; const out = document.getElementById('result'); const input = document.getElementById('code');
+    async function check(code) {
+      mount(out, html`<div class="empty">Checking…</div>`);
+      try {
+        const r = await SF.api('GET', '/api/verify' + SF.qs({ code }));
+        if (!r.valid) { mount(out, html`<div class="notice">❌ No report card matches that code. Check the code and try again — a card that cannot be verified should not be trusted.</div>`); return; }
+        mount(out, html`<div class="notice info" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">✅ <b>Genuine report card</b></div>
+          <div class="kv" style="margin-top:14px"><div><small>School</small><b>${r.school}</b></div><div><small>Student</small><b>${r.student}</b></div><div><small>Class</small><b>${r.class || '—'}</b></div>
+          <div><small>Term</small><b>Term ${r.term}, ${r.academic_year}</b></div><div><small>Average</small><b>${r.average === null ? '—' : r.average}${r.grade ? ` (${r.grade})` : ''}</b></div>
+          <div><small>Position</small><b>${r.position ? `${ordinal(r.position)} of ${r.out_of}` : '—'}</b></div><div><small>Issued</small><b>${SF.ui.fmtDate(r.issued_at)}</b></div></div>`);
+      } catch (e) { mount(out, html`<div class="notice">${e.message}</div>`); }
+    }
+    document.getElementById('f').addEventListener('submit', (e) => { e.preventDefault(); if (input.value.trim()) check(input.value.trim()); });
+    const c = new URLSearchParams(location.search).get('code');
+    if (c) { input.value = c; check(c); }
+  })();
+  </script>
+</body></html>
